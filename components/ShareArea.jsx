@@ -1,31 +1,29 @@
 'use client'
-
-import { useState } from 'react'
-
-const getSiteUrl = () => {
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL
-  }
-  if (typeof window !== 'undefined') {
-    return window.location.origin
-  }
-  return 'https://hiragana-slot.vercel.app'
-}
+import { useState, useEffect } from 'react'
 
 export default function ShareArea({ word, lang, visible }) {
   const [showModal, setShowModal] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied]       = useState(false)
+  const [siteUrl, setSiteUrl]     = useState('')
+
+  // クライアントサイドでのみURLを取得
+  useEffect(() => {
+    setSiteUrl(window.location.origin)
+  }, [])
 
   if (!visible || !word) return <div style={{ minHeight: '40px' }} />
 
-  const siteUrl = getSiteUrl()
-  const ogImageUrl = `${siteUrl}/api/og?word=${encodeURIComponent(word)}`
-  const shareUrl = `${siteUrl}/?word=${encodeURIComponent(word)}`
+  const ogImageUrl = siteUrl
+    ? `${siteUrl}/api/og?word=${encodeURIComponent(word)}`
+    : null
+
+  const shareUrl = siteUrl
+    ? `${siteUrl}/?word=${encodeURIComponent(word)}`
+    : ''
+
   const tweetText = lang === 'en'
     ? `"${word}" — from Hiragana Slot ✨ #hiraganaslot\n${shareUrl}`
     : `「${word}」\nひらがなスロットで出た言葉 #ひらがなスロット\n${shareUrl}`
-
-  const handleShareClick = () => setShowModal(true)
 
   const handleTweet = () => {
     window.open(
@@ -53,7 +51,7 @@ export default function ShareArea({ word, lang, visible }) {
         alignItems: 'center',
       }}>
         {/* Xシェアボタン */}
-        <button onClick={handleShareClick} style={{
+        <button onClick={() => setShowModal(true)} style={{
           fontFamily: "'Noto Sans JP', sans-serif",
           fontSize: '11px',
           letterSpacing: '0.06em',
@@ -135,13 +133,60 @@ export default function ShareArea({ word, lang, visible }) {
               overflow: 'hidden',
               border: '1px solid var(--border)',
               marginBottom: '16px',
+              background: '#f5f4f0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={ogImageUrl}
-                alt="シェア画像"
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              />
+              {ogImageUrl ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={ogImageUrl}
+                    alt="OGP preview"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block',
+                    }}
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none'
+                      const fallback = e.currentTarget.nextElementSibling
+                      if (fallback) fallback.style.display = 'flex'
+                    }}
+                  />
+                  <div
+                    style={{
+                      display: 'none',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '100%',
+                      height: '100%',
+                      fontSize: '11px',
+                      color: 'var(--text-muted)',
+                      fontFamily: "'Noto Sans JP', sans-serif",
+                      letterSpacing: '0.08em',
+                    }}
+                  >
+                    画像の読み込みに失敗しました
+                  </div>
+                </>
+              ) : (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                  height: '100%',
+                  fontSize: '11px',
+                  color: 'var(--text-muted)',
+                  fontFamily: "'Noto Sans JP', sans-serif",
+                  letterSpacing: '0.08em',
+                }}>
+                  読み込み中...
+                </div>
+              )}
             </div>
 
             {/* 説明テキスト */}
@@ -160,7 +205,6 @@ export default function ShareArea({ word, lang, visible }) {
 
             {/* ボタン */}
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-              {/* キャンセル */}
               <button
                 onClick={() => setShowModal(false)}
                 style={{
@@ -178,7 +222,6 @@ export default function ShareArea({ word, lang, visible }) {
                 {lang === 'en' ? 'Cancel' : 'キャンセル'}
               </button>
 
-              {/* Xで投稿 */}
               <button
                 onClick={handleTweet}
                 style={{
