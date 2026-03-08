@@ -1,145 +1,174 @@
-import { useState, useRef, useLayoutEffect, useCallback } from 'react';
-import { HIRAGANA, HIRAGANA_REV } from '../data/hiragana';
+'use client'
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { HIRAGANA } from '../data/hiragana'
+
+// ── 定数 ──
+const SPEED_MAX  = 9.0   // 最高速度 px/frame
+const ACCEL_MS   = 500   // 加速にかかるms
+const DECEL_MS   = 480   // 減速にかかるms
 
 const CHAR_H_VAR = () => {
-  const val = getComputedStyle(document.documentElement)
-    .getPropertyValue('--char-h').trim();
-  return parseInt(val) || 32;
-};
+  if (typeof window === 'undefined') return 32
+  return parseInt(
+    getComputedStyle(document.documentElement).getPropertyValue('--char-h')
+  ) || 32
+}
 
-const SPEED_MAX  = 8.0;
-const SPEED_MIN  = 0.3;
-const ACCEL_TIME = 600;
-const DECEL_TIME = 500;
-
+// 1リールのcharリストを生成（逆順 × 8周）
 function buildCharList() {
-  let result = [];
-  for (let i = 0; i < 8; i++) result = result.concat(HIRAGANA_REV);
-  return result;
+  const rev = [...HIRAGANA].reverse()
+  let out = []
+  for (let i = 0; i < 8; i++) out = out.concat(rev)
+  return out
 }
 
 export function useSlot(reelCount) {
-  const [reelStates, setReelStates]   = useState([]);
-  const [isSpinning, setIsSpinning]   = useState(false);
-  const [result, setResult]           = useState(null);
-  const reelsRef     = useRef([]);
-  const intervalRef  = useRef(null);
-  const trackRefs    = useRef([]);
+  // ── React state（UIの更新のみ） ──
+  const [reelStates, setReelStates] = useState([])   // [{stopped, currentChar}]
+  const [isSpinning, setIsSpinning] = useState(false)
+  const [result, setResult]         = useState(null)
 
-  const applyOffset = useCallback((idx) => {
-    const r = reelsRef.current[idx];
-    const charH = CHAR_H_VAR();
-    if (r && trackRefs.current[idx]) {
-      trackRefs.current[idx].style.transform = `translateY(${-r.offset + charH}px)`;
-    }
-  }, []);
+  // ── Ref（アニメーションループで使う値はすべてここ） ──
+  const reelsRef    = useRef([])   // リールの物理状態
+  const trackRefs   = useRef([])   // DOM refs
+  const intervalRef = useRef(null)
+  const spinStartRef= useRef(0)    // スピン開始時刻
 
-  const initReels = useCallback((n) => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    const charH = CHAR_H_VAR();
-    const newReels = Array.from({ length: n }, () => ({
-      chars:       buildCharList(),
-      offset:      Math.floor(Math.random() * HIRAGANA.length) * charH,
-      speed:       0,
-      stopped:     false,
-      stopping:    false,
-      stopStartTime: null,
-      currentChar: '',
-    }));
-    reelsRef.current = newReels;
-    setReelStates(newReels.map(r => ({ stopped: r.stopped, stopping: false, currentChar: r.currentChar })));
-    setResult(null);
-    setIsSpinning(false);
-  }, []);
-
-  useLayoutEffect(() => { initReels(reelCount); }, [reelCount, initReels]);
-
+  // ── trackRefの登録（Reel.jsxから呼ばれる） ──
   const setTrackRef = useCallback((idx, el) => {
-    trackRefs.current[idx] = el;
-    if (el && reelsRef.current[idx]) {
-      const r = reelsRef.current[idx];
-      const charH = CHAR_H_VAR();
-      el.style.transform = `translateY(${-r.offset + charH}px)`;
+    trackRefs.current[idx] = el
+  }, [])
+
+  // ── offsetをDOMに反映 ──
+  const applyOffset = useCallback((idx) => {
+    const el = trackRefs.current[idx]
+    if (!el) return
+    const charH = CHAR_H_VAR()
+    el.style.transform = `translateY(${-reelsRef.current[idx].offset + charH}px)`
+  }, [])
+
+  // ── リール初期化 ──
+  const initReels = useCallback((n) => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
     }
-  }, []);
+    const charH = CHAR_H_VAR()
+    reelsRef.current = Array.from({ length: n }, () => ({
+      chars:        buildCharList(),
+      offset:       Math.floor(Math.random() * HIRAGANA.length) * charH,
+      speed:        0,
+      stopped:      false,
+      stopping:     false,  // 減速中フラグ
+      decelStart:   null,   // 減速開始時刻
+      currentChar:  '',
+    }))
+    setReelStates(Array.from({ length: n }, () => ({ stopped: false, currentChar: '' })))
+    setResult(null)
+    setIsSpinning(false)
+  }, [])
 
+  useEffect(() => {
+    initReels(reelCount)
+  }, [reelCount, initReels])
+
+  // ── スピン開始 ──
   const startSpin = useCallback(() => {
-    const startTime = Date.now();
+    if (intervalRef.current) clearInterval(intervalRef.current)
 
+    setResult(null)
+    setIsSpinning(true)
+    spinStartRef.current = Date.now()
+
+    // 全リールをリセット
     reelsRef.current.forEach((r) => {
-      r.stopped       = false;
-      r.speed         = 0;
-      r.stopping      = false;
-      r.stopStartTime = null;
-    });
-
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    setResult(null);
-    setIsSpinning(true);
-    setReelStates(reelsRef.current.map(r => ({ stopped: false, stopping: false, currentChar: '' })));
+      r.stopped    = false
+      r.stopping   = false
+      r.decelStart = null
+      r.speed      = 0
+    })
+    setReelStates(prev => prev.map(() => ({ stopped: false, currentChar: '' })))
 
     intervalRef.current = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const charH = CHAR_H_VAR();
+      const elapsed = Date.now() - spinStartRef.current
+      const charH   = CHAR_H_VAR()
+      let allStopped = true
 
       reelsRef.current.forEach((r, i) => {
-        if (r.stopped) return;
+        if (r.stopped) return
+        allStopped = false
 
         if (r.stopping) {
-          const decelElapsed = Date.now() - r.stopStartTime;
-          const progress = Math.min(decelElapsed / DECEL_TIME, 1);
-          r.speed = SPEED_MAX * (1 - progress) * (1 - progress);
+          // ── 減速フェーズ ──
+          const decelElapsed = Date.now() - r.decelStart
+          const t = Math.min(decelElapsed / DECEL_MS, 1)
+          // easeOut cubic: 最初は速く、最後はゆっくり
+          r.speed = SPEED_MAX * (1 - t) * (1 - t) * (1 - t)
 
-          if (r.speed < SPEED_MIN) {
-            const snapped = Math.round(r.offset / charH) * charH;
-            r.offset  = snapped;
-            r.stopped = true;
-            applyOffset(i);
+          if (r.speed < 0.4) {
+            // スナップして完全停止
+            const snapped = Math.round(r.offset / charH) * charH
+            r.offset      = snapped
+            r.stopped     = true
+            r.speed       = 0
+            applyOffset(i)
 
-            const charIdx = (snapped / charH) % r.chars.length;
-            const safeIdx = ((Math.round(charIdx) % r.chars.length) + r.chars.length) % r.chars.length;
-            r.currentChar = r.chars[safeIdx];
+            // 停止文字の特定
+            const raw    = (snapped / charH) % r.chars.length
+            const safeIdx= ((Math.round(raw) % r.chars.length) + r.chars.length) % r.chars.length
+            r.currentChar = r.chars[safeIdx]
 
+            // stateを更新（このリールだけ）
             setReelStates(prev =>
-              prev.map((s, idx) => idx === i ? { stopped: true, stopping: false, currentChar: r.currentChar } : s)
-            );
-
-            if (reelsRef.current.every(rr => rr.stopped)) {
-              clearInterval(intervalRef.current);
-              intervalRef.current = null;
-              setIsSpinning(false);
-              const word = reelsRef.current.map(rr => rr.currentChar).join('');
-              setResult(word);
-            }
-            return;
+              prev.map((s, idx) =>
+                idx === i ? { stopped: true, currentChar: r.currentChar } : s
+              )
+            )
+            return
           }
         } else {
-          const accelProgress = Math.min(elapsed / ACCEL_TIME, 1);
-          r.speed = SPEED_MAX * accelProgress;
+          // ── 加速フェーズ ──
+          const t = Math.min(elapsed / ACCEL_MS, 1)
+          r.speed = SPEED_MAX * t
         }
 
-        r.offset -= r.speed;
-        if (r.offset < charH * 4) r.offset += (r.chars.length / 2) * charH;
-        applyOffset(i);
-      });
-    }, 16);
-  }, [applyOffset]);
+        // offsetを進める
+        r.offset -= r.speed
+        // ループ（十分な余裕をもって折り返す）
+        if (r.offset < charH * 4) {
+          r.offset += (r.chars.length / 2) * charH
+        }
+        applyOffset(i)
+      })
 
+      // 全リール停止チェック
+      if (allStopped && reelsRef.current.length > 0 && reelsRef.current.every(r => r.stopped)) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+        setIsSpinning(false)
+        const word = reelsRef.current.map(r => r.currentChar).join('')
+        setResult(word)
+      }
+    }, 16)
+  }, [applyOffset])
+
+  // ── 1リール停止（減速開始） ──
   const stopReel = useCallback((idx) => {
-    const r = reelsRef.current[idx];
-    if (!r || r.stopped || r.stopping) return;
+    const r = reelsRef.current[idx]
+    if (!r || r.stopped || r.stopping) return
 
-    r.stopping      = true;
-    r.stopStartTime = Date.now();
-
+    r.stopping   = true
+    r.decelStart = Date.now()
+    // UIのボタン状態だけ先に更新（止めるボタンをグレーアウト）
     setReelStates(prev =>
       prev.map((s, i) => i === idx ? { ...s, stopping: true } : s)
-    );
-  }, []);
+    )
+  }, [])
 
+  // ── 全リール停止 ──
   const stopAll = useCallback(() => {
-    reelsRef.current.forEach((_, i) => stopReel(i));
-  }, [stopReel]);
+    reelsRef.current.forEach((_, i) => stopReel(i))
+  }, [stopReel])
 
   return {
     reelStates,
@@ -151,5 +180,5 @@ export function useSlot(reelCount) {
     initReels,
     setTrackRef,
     reelsRef,
-  };
+  }
 }

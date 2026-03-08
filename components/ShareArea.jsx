@@ -2,7 +2,15 @@
 
 import { useState } from 'react'
 
-const SITE_URL = 'https://hiragana-slot.vercel.app'
+const getSiteUrl = () => {
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL
+  }
+  if (typeof window !== 'undefined') {
+    return window.location.origin
+  }
+  return 'https://hiragana-slot.vercel.app'
+}
 
 export default function ShareArea({ word, lang, visible }) {
   const [showModal, setShowModal] = useState(false)
@@ -10,8 +18,9 @@ export default function ShareArea({ word, lang, visible }) {
 
   if (!visible || !word) return <div style={{ minHeight: '40px' }} />
 
-  const ogImageUrl = `${SITE_URL}/api/og?word=${encodeURIComponent(word)}`
-  const shareUrl = `${SITE_URL}/?word=${encodeURIComponent(word)}`
+  const siteUrl = getSiteUrl()
+  const ogImageUrl = `${siteUrl}/api/og?word=${encodeURIComponent(word)}`
+  const shareUrl = `${siteUrl}/?word=${encodeURIComponent(word)}`
   const tweetText = lang === 'en'
     ? `"${word}" — from Hiragana Slot ✨ #hiraganaslot\n${shareUrl}`
     : `「${word}」\nひらがなスロットで出た言葉 #ひらがなスロット\n${shareUrl}`
