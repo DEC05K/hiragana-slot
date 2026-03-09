@@ -5,6 +5,7 @@ export default function ShareArea({ word, lang, visible }) {
   const [showModal, setShowModal] = useState(false)
   const [copied, setCopied]       = useState(false)
   const [siteUrl, setSiteUrl]     = useState('')
+  const [imageLoaded, setImageLoaded] = useState(false)
 
   // クライアントサイドでのみURLを取得
   useEffect(() => {
@@ -51,7 +52,10 @@ export default function ShareArea({ word, lang, visible }) {
         alignItems: 'center',
       }}>
         {/* Xシェアボタン */}
-        <button onClick={() => setShowModal(true)} style={{
+        <button onClick={() => {
+          setImageLoaded(false)
+          setShowModal(true)
+        }} style={{
           fontFamily: "'Noto Sans JP', sans-serif",
           fontSize: '11px',
           letterSpacing: '0.06em',
@@ -134,58 +138,71 @@ export default function ShareArea({ word, lang, visible }) {
               border: '1px solid var(--border)',
               marginBottom: '16px',
               background: '#f5f4f0',
+              position: 'relative',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-              {ogImageUrl ? (
+              {/* 読み込み中プレースホルダー */}
+              {!imageLoaded && (
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  background: '#f5f4f0',
+                  zIndex: 1,
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    gap: '5px',
+                  }}>
+                    {[0, 1, 2].map((i) => (
+                      <div
+                        key={i}
+                        style={{
+                          width: '5px',
+                          height: '5px',
+                          borderRadius: '50%',
+                          background: '#a09d97',
+                          animation: `ogp-dot 1.2s ease-in-out ${i * 0.2}s infinite`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <div style={{
+                    fontSize: '9px',
+                    color: '#a09d97',
+                    letterSpacing: '0.2em',
+                    fontFamily: "'Noto Sans JP', sans-serif",
+                  }}>
+                    {lang === 'en' ? 'generating...' : '生成中...'}
+                  </div>
+                </div>
+              )}
+
+              {/* OGP画像本体 */}
+              {ogImageUrl && (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={ogImageUrl}
-                    alt="OGP preview"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      display: 'block',
-                    }}
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                      const fallback = e.currentTarget.nextElementSibling
-                      if (fallback) fallback.style.display = 'flex'
-                    }}
-                  />
-                  <div
-                    style={{
-                      display: 'none',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '100%',
-                      height: '100%',
-                      fontSize: '11px',
-                      color: 'var(--text-muted)',
-                      fontFamily: "'Noto Sans JP', sans-serif",
-                      letterSpacing: '0.08em',
-                    }}
-                  >
-                    画像の読み込みに失敗しました
-                  </div>
+                  src={ogImageUrl}
+                  alt="OGP preview"
+                  onLoad={() => setImageLoaded(true)}
+                  onError={() => setImageLoaded(true)}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block',
+                    opacity: imageLoaded ? 1 : 0,
+                    transition: 'opacity 0.3s ease',
+                  }}
+                />
                 </>
-              ) : (
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '100%',
-                  height: '100%',
-                  fontSize: '11px',
-                  color: 'var(--text-muted)',
-                  fontFamily: "'Noto Sans JP', sans-serif",
-                  letterSpacing: '0.08em',
-                }}>
-                  読み込み中...
-                </div>
               )}
             </div>
 

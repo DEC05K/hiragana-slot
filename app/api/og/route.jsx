@@ -55,55 +55,101 @@ export async function GET(request) {
             position: 'relative',
           }}
         >
-          {/* 左上ロゴ */}
-          <div style={{
-            position: 'absolute',
-            top: '52px',
-            left: '60px',
-            display: 'flex',
-            flexDirection: 'column',
-          }}>
-            <div style={{ fontSize: '11px', letterSpacing: '0.3em', color: '#a09d97', fontFamily: 'sans-serif' }}>
+          {/* ── 左上ロゴブロック ── */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '52px',
+              left: '60px',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <div style={{
+              fontSize: '11px',
+              letterSpacing: '0.38em',
+              paddingLeft: '0.38em',
+              color: '#a09d97',
+              textTransform: 'uppercase',
+              fontFamily: 'sans-serif',
+              fontWeight: '300',
+              lineHeight: '1.4',
+            }}>
               HIRAGANA SLOT
             </div>
-            <div style={{ fontSize: '20px', letterSpacing: '0.16em', color: '#1a1917', fontFamily: 'NotoSerifJP', marginTop: '4px' }}>
+            <div style={{
+              fontSize: '20px',
+              letterSpacing: '0.16em',
+              paddingLeft: '0.16em',
+              color: '#1a1917',
+              fontFamily: 'NotoSerifJP',
+              fontWeight: '300',
+              lineHeight: '1.6',
+            }}>
               ひらがなスロット
             </div>
-            <div style={{ fontSize: '12px', letterSpacing: '0.12em', color: '#a09d97', fontFamily: 'NotoSerifJP', marginTop: '2px' }}>
+            <div style={{
+              fontSize: '12px',
+              letterSpacing: '0.12em',
+              paddingLeft: '0.12em',
+              color: '#a09d97',
+              fontFamily: 'sans-serif',
+              fontWeight: '300',
+              lineHeight: '1.4',
+            }}>
               文字を回して、ことばを生む。
             </div>
           </div>
 
-          {/* ローマ字 */}
-          <div style={{
-            fontSize: '18px',
-            letterSpacing: '0.28em',
-            color: '#a09d97',
-            fontFamily: 'sans-serif',
-            marginBottom: '16px',
-          }}>
-            {romaji}
+          {/* ── 中央グループ（ローマ字＋ワード）── */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '12px',
+            }}
+          >
+            {/* ローマ字 */}
+            <div style={{
+              fontSize: '17px',
+              letterSpacing: '0.32em',
+              paddingLeft: '0.32em',
+              color: '#a09d97',
+              fontFamily: 'sans-serif',
+              fontWeight: '300',
+              lineHeight: '1',
+            }}>
+              {romaji}
+            </div>
+
+            {/* ひらがなワード */}
+            <div style={{
+              fontSize: `${fontSize}px`,
+              fontWeight: '300',
+              color: '#1a1917',
+              letterSpacing: '0.28em',
+              paddingLeft: '0.28em',
+              fontFamily: 'NotoSerifJP',
+              lineHeight: '1',
+              whiteSpace: 'nowrap',
+            }}>
+              {word}
+            </div>
           </div>
 
-          {/* ひらがなワード */}
-          <div style={{
-            fontSize: `${fontSize}px`,
-            fontWeight: '300',
-            color: '#1a1917',
-            letterSpacing: '0.28em',
-            fontFamily: 'NotoSerifJP',
-            lineHeight: '1',
-          }}>
-            {word}
-          </div>
-
-          {/* 右下URL */}
+          {/* ── 右下URL ── */}
           <div style={{
             position: 'absolute',
             bottom: '52px',
             right: '60px',
             fontSize: '11px',
             color: '#c8c5bc',
+            letterSpacing: '0.12em',
             fontFamily: 'sans-serif',
           }}>
             hiragana-slot.vercel.app
