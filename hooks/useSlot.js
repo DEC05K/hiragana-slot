@@ -3,7 +3,6 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { HIRAGANA } from '../data/hiragana'
 
 // ── 定数 ──
-const SPEED_MAX  = 9.0   // 最高速度 px/frame
 const ACCEL_MS   = 500   // 加速にかかるms
 const DECEL_MS   = 480   // 減速にかかるms
 
@@ -22,7 +21,7 @@ function buildCharList() {
   return out
 }
 
-export function useSlot(reelCount) {
+export function useSlot(reelCount, speed = 5) {
   // ── React state（UIの更新のみ） ──
   const [reelStates, setReelStates] = useState([])   // [{stopped, currentChar}]
   const [isSpinning, setIsSpinning] = useState(false)
@@ -33,6 +32,11 @@ export function useSlot(reelCount) {
   const trackRefs   = useRef([])   // DOM refs
   const intervalRef = useRef(null)
   const spinStartRef= useRef(0)    // スピン開始時刻
+  const speedRef    = useRef(speed) // スライダー値を毎フレーム参照
+
+  useEffect(() => {
+    speedRef.current = speed
+  }, [speed])
 
   // ── trackRefの登録（Reel.jsxから呼ばれる） ──
   const setTrackRef = useCallback((idx, el) => {
@@ -99,11 +103,11 @@ export function useSlot(reelCount) {
         allStopped = false
 
         if (r.stopping) {
-          // ── 減速フェーズ ──
+          // ── 減速フェーズ：停止ボタンを押した瞬間の速度から減速 ──
           const decelElapsed = Date.now() - r.decelStart
           const t = Math.min(decelElapsed / DECEL_MS, 1)
-          // easeOut cubic: 最初は速く、最後はゆっくり
-          r.speed = SPEED_MAX * (1 - t) * (1 - t) * (1 - t)
+          const maxSpeed = r.maxSpeedAtStop ?? speedRef.current
+          r.speed = maxSpeed * (1 - t) * (1 - t) * (1 - t)
 
           if (r.speed < 0.4) {
             // スナップして完全停止
@@ -127,9 +131,10 @@ export function useSlot(reelCount) {
             return
           }
         } else {
-          // ── 加速フェーズ ──
+          // ── 加速フェーズ：スライダー値を最高速として加速 ──
+          const maxSpeed = speedRef.current
           const t = Math.min(elapsed / ACCEL_MS, 1)
-          r.speed = SPEED_MAX * t
+          r.speed = maxSpeed * t
         }
 
         // offsetを進める
@@ -157,8 +162,9 @@ export function useSlot(reelCount) {
     const r = reelsRef.current[idx]
     if (!r || r.stopped || r.stopping) return
 
-    r.stopping   = true
-    r.decelStart = Date.now()
+    r.stopping       = true
+    r.decelStart     = Date.now()
+    r.maxSpeedAtStop = r.speed
     // UIのボタン状態だけ先に更新（止めるボタンをグレーアウト）
     setReelStates(prev =>
       prev.map((s, i) => i === idx ? { ...s, stopping: true } : s)

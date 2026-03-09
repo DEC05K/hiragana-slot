@@ -10,7 +10,7 @@ export default function Footer() {
       marginTop: 'auto',
     }}>
       <a
-        href="https://www.buymeacoffee.com/decosk3"
+        href="https://www.buymeacoffee.com/dec05k"
         target="_blank"
         rel="noopener noreferrer"
         style={{ display: 'inline-block', lineHeight: 0, marginTop: '4px' }}

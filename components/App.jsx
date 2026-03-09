@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { T } from '../utils/i18n';
 import { useSlot } from '../hooks/useSlot';
 import Header from './Header';
 import LengthSelector from './LengthSelector';
+import SpeedSlider from './SpeedSlider';
 import ReelsWrapper from './ReelsWrapper';
 import SpinButton from './SpinButton';
 import Result from './Result';
@@ -14,12 +15,11 @@ import Footer from './Footer';
 export default function App() {
   const [lang, setLang] = useState('ja');
   const [reelCount, setReelCount] = useState(4);
+  const [speed, setSpeed] = useState(5);
   const [isPC, setIsPC] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  const slot = useSlot(reelCount);
-  const isSpinningRef = useRef(slot.isSpinning);
-  isSpinningRef.current = slot.isSpinning;
+  const slot = useSlot(reelCount, speed);
 
   const handleLangToggle = () => {
     setLang((prev) => (prev === 'ja' ? 'en' : 'ja'));
@@ -36,12 +36,16 @@ export default function App() {
 
   useEffect(() => {
     if (!mounted) return;
-    let timeoutId = null;
+    let prevWidth = window.innerWidth;
+    let resizeTimer;
     const handleResize = () => {
-      if (timeoutId) clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        setIsPC(window.innerWidth >= 768);
-        if (!isSpinningRef.current) {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        const currentWidth = window.innerWidth;
+        if (currentWidth === prevWidth) return;
+        prevWidth = currentWidth;
+        setIsPC(currentWidth >= 768);
+        if (!slot.isSpinning) {
           slot.initReels(reelCount);
         }
       }, 200);
@@ -49,9 +53,9 @@ export default function App() {
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
-      if (timeoutId) clearTimeout(timeoutId);
+      clearTimeout(resizeTimer);
     };
-  }, [mounted, reelCount, slot]);
+  }, [mounted, reelCount, slot.isSpinning]);
 
   const resultVisible = !!slot.result;
 
@@ -89,6 +93,11 @@ export default function App() {
           reelCount={reelCount}
           onChange={handleReelCountChange}
           disabled={slot.isSpinning}
+          lang={lang}
+        />
+        <SpeedSlider
+          value={speed}
+          onChange={setSpeed}
           lang={lang}
         />
         {!mounted ? (

@@ -14,6 +14,8 @@ export const T = {
     bmc:        'Buy me a coffee',
     langSwitch: 'EN',
     lenLabels:  ['二','三','四','五','六'],
+    speedSlow:  '遅',
+    speedFast:  '速',
     tweetText:  (w) => `「${w}」\nひらがなスロットで出た言葉 #ひらがなスロット`,
   },
   en: {
@@ -31,6 +33,8 @@ export const T = {
     bmc:        'Buy me a coffee',
     langSwitch: 'JA',
     lenLabels:  ['2','3','4','5','6'],
+    speedSlow:  'slow',
+    speedFast:  'fast',
     tweetText:  (w) => `"${w}" — from Hiragana Slot ✨ #hiraganaslot`,
   },
 };

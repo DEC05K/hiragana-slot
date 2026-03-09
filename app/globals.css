@@ -204,6 +204,31 @@ body {
   padding: 24px 16px 32px;
 }
 
+/* スピードスライダーのつまみ */
+input[type='range'].speed-slider-thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #1a1917;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  transition: transform 0.12s;
+}
+input[type='range'].speed-slider-thumb::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+input[type='range'].speed-slider-thumb::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #1a1917;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
 @media (min-width: 768px) {
   .result-word { font-size: 48px; letter-spacing: 0.35em; }
   .stop-btn { height: 36px; font-size: 11px; }
