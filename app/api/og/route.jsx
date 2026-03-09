@@ -26,6 +26,11 @@ function toRomaji(word) {
 
 export async function GET(request) {
   try {
+    const fontRes = await fetch(
+      new URL('/fonts/NotoSerifJP-Light.ttf', request.url).toString()
+    )
+    const fontData = await fontRes.arrayBuffer()
+
     const { searchParams } = new URL(request.url)
     const word = searchParams.get('word') || 'ひらがな'
     const romaji = toRomaji(word)
@@ -61,10 +66,10 @@ export async function GET(request) {
             <div style={{ fontSize: '11px', letterSpacing: '0.3em', color: '#a09d97', fontFamily: 'sans-serif' }}>
               HIRAGANA SLOT
             </div>
-            <div style={{ fontSize: '20px', letterSpacing: '0.16em', color: '#1a1917', fontFamily: 'serif', marginTop: '4px' }}>
+            <div style={{ fontSize: '20px', letterSpacing: '0.16em', color: '#1a1917', fontFamily: 'NotoSerifJP', marginTop: '4px' }}>
               ひらがなスロット
             </div>
-            <div style={{ fontSize: '12px', letterSpacing: '0.12em', color: '#a09d97', fontFamily: 'sans-serif', marginTop: '2px' }}>
+            <div style={{ fontSize: '12px', letterSpacing: '0.12em', color: '#a09d97', fontFamily: 'NotoSerifJP', marginTop: '2px' }}>
               文字を回して、ことばを生む。
             </div>
           </div>
@@ -86,7 +91,7 @@ export async function GET(request) {
             fontWeight: '300',
             color: '#1a1917',
             letterSpacing: '0.28em',
-            fontFamily: 'serif',
+            fontFamily: 'NotoSerifJP',
             lineHeight: '1',
           }}>
             {word}
@@ -111,7 +116,16 @@ export async function GET(request) {
           <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: '1px', background: '#d8d5cc' }} />
         </div>
       ),
-      { width: 1200, height: 630 }
+      {
+        width: 1200,
+        height: 630,
+        fonts: [{
+          name: 'NotoSerifJP',
+          data: fontData,
+          weight: 300,
+          style: 'normal',
+        }],
+      }
     )
   } catch (e) {
     return new Response(`OGP generation failed: ${e.message}`, { status: 500 })
