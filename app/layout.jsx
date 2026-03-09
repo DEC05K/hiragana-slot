@@ -8,20 +8,14 @@ export const metadata = {
     title: 'ひらがなスロット / Hiragana Slot',
     description: 'Spin hiragana characters and discover random Japanese words.',
     url: 'https://hiragana-slot.vercel.app',
-    images: [
-      {
-        url: '/api/og?word=ひらがな',
-        width: 1200,
-        height: 630,
-      },
-    ],
+    // imagesは削除（page.jsxのgenerateMetadataで動的に生成する）
   },
   twitter: {
     card: 'summary_large_image',
     site: '@decosk3',
     title: 'ひらがなスロット / Hiragana Slot',
     description: 'Spin hiragana characters and discover random Japanese words.',
-    images: ['/api/og?word=ひらがな'],
+    // imagesは削除（page.jsxのgenerateMetadataで動的に生成する）
   },
 }
 
