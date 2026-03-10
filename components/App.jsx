@@ -14,7 +14,7 @@ import Footer from './Footer';
 
 export default function App() {
   const [lang, setLang] = useState('ja');
-  const [reelCount, setReelCount] = useState(4);
+  const [reelCount, setReelCount] = useState(3);
   const [speed, setSpeed] = useState(5);
   const [isPC, setIsPC] = useState(false);
   const [mounted, setMounted] = useState(false);
