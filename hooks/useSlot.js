@@ -72,9 +72,10 @@ export function useSlot(reelCount, speed = 5) {
     setIsSpinning(false)
   }, [])
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     initReels(reelCount)
-  }, [reelCount, initReels])
+  }, [reelCount])
 
   // ── スピン開始 ──
   const startSpin = useCallback(() => {

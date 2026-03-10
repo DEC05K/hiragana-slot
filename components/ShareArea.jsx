@@ -6,11 +6,24 @@ export default function ShareArea({ word, lang, visible }) {
   const [copied, setCopied]       = useState(false)
   const [siteUrl, setSiteUrl]     = useState('')
   const [imageLoaded, setImageLoaded] = useState(false)
+  const [downloading, setDownloading] = useState(false)
 
   // クライアントサイドでのみURLを取得
   useEffect(() => {
     setSiteUrl(window.location.origin)
   }, [])
+
+  // showModal が true の間だけ Esc キーを監視する
+  useEffect(() => {
+    if (!showModal) return
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setShowModal(false)
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [showModal])
 
   if (!visible || !word) return <div style={{ minHeight: '40px' }} />
 
@@ -24,7 +37,7 @@ export default function ShareArea({ word, lang, visible }) {
 
   const tweetText = lang === 'en'
     ? `"${word}" — from Hiragana Slot ✨ #hiraganaslot\n${shareUrl}`
-    : `「${word}」\nひらがなスロットで出た言葉 #ひらがなスロット\n${shareUrl}`
+    : `「${word}」\nひらがなスロットで出たあなたの言葉🎰 #hiraganaslot\n${shareUrl}`
 
   const handleTweet = () => {
     window.open(
@@ -39,6 +52,25 @@ export default function ShareArea({ word, lang, visible }) {
       setCopied(true)
       setTimeout(() => setCopied(false), 1800)
     })
+  }
+
+  const handleDownload = async () => {
+    if (!ogImageUrl) return
+    setDownloading(true)
+    try {
+      const res = await fetch(ogImageUrl)
+      const blob = await res.blob()
+      const objectUrl = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = objectUrl
+      a.download = `hiragana-slot-${word}.png`
+      a.click()
+      URL.revokeObjectURL(objectUrl)
+    } catch (e) {
+      console.error('Download failed:', e)
+    } finally {
+      setDownloading(false)
+    }
   }
 
   return (
@@ -237,6 +269,36 @@ export default function ShareArea({ word, lang, visible }) {
                 }}
               >
                 {lang === 'en' ? 'Cancel' : 'キャンセル'}
+              </button>
+
+              <button
+                onClick={handleDownload}
+                disabled={downloading}
+                style={{
+                  fontFamily: "'Noto Sans JP', sans-serif",
+                  fontSize: '11px',
+                  letterSpacing: '0.06em',
+                  padding: '9px 20px',
+                  background: 'transparent',
+                  color: 'var(--text-secondary)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '4px',
+                  cursor: downloading ? 'default' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  opacity: downloading ? 0.5 : 1,
+                }}
+              >
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                {downloading
+                  ? (lang === 'en' ? 'Saving...' : '保存中...')
+                  : (lang === 'en' ? 'Save Image' : '画像を保存')
+                }
               </button>
 
               <button

@@ -17,6 +17,6 @@ export const ROMAJI_MAP = {
   'ぱ':'pa', 'ぴ':'pi', 'ぷ':'pu', 'ぺ':'pe', 'ぽ':'po',
 };
 
-export function toRomaji(word) {
-  return word.split('').map(c => ROMAJI_MAP[c] || c).join('-');
+export function toRomaji(word, separator = '-') {
+  return word.split('').map(c => ROMAJI_MAP[c] || c).join(separator);
 }
