@@ -210,6 +210,13 @@ body {
 }
 
 /* スピードスライダーのつまみ */
+input[type='range'].speed-slider-thumb {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  /* タッチターゲットを広げる */
+  padding: 8px 0;
+}
 input[type='range'].speed-slider-thumb::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;

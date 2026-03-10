@@ -62,6 +62,8 @@ export default function SpeedSlider({ value, onChange, lang, disabled }) {
         value={value}
         onChange={handleChange}
         disabled={false}
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
         style={{
           flex: 1,
           WebkitAppearance: 'none',
@@ -70,6 +72,9 @@ export default function SpeedSlider({ value, onChange, lang, disabled }) {
           outline: 'none',
           cursor: 'pointer',
           borderRadius: '1px',
+          touchAction: 'none',
+          WebkitUserSelect: 'none',
+          userSelect: 'none',
         }}
       />
 
