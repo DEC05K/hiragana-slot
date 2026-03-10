@@ -122,17 +122,21 @@ export async function GET(request) {
             </div>
           </div>
 
-          {/* ── 右下URL ── */}
+          {/* ── 右下：ハッシュタグ＋URL ── */}
           <div style={{
             position: 'absolute',
             bottom: '52px',
             right: '60px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '20px',
             fontSize: '11px',
             color: '#c8c5bc',
             letterSpacing: '0.12em',
             fontFamily: 'sans-serif',
           }}>
-            hiragana-slot.vercel.app
+            <span>#hiraganaslot</span>
+            <span>hiragana-slot.vercel.app</span>
           </div>
 
           {/* ボーダー */}
