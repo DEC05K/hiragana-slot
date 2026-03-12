@@ -30,7 +30,7 @@ export default function Result({ word, lang, visible }) {
           className={`result-romaji ${showTransition ? 'visible' : ''}`}
           style={{
             fontFamily: "'Noto Sans JP', sans-serif",
-            fontSize: '11px',
+            fontSize: '13px',
             fontWeight: 300,
             letterSpacing: '0.2em',
             color: 'var(--text-muted)',
@@ -44,7 +44,7 @@ export default function Result({ word, lang, visible }) {
         className={`result-word ${showTransition ? 'visible' : ''}`}
         style={{
           fontFamily: "'Noto Serif JP', serif",
-          fontSize: '34px',
+          fontSize: '39px',
           fontWeight: 300,
           letterSpacing: '0.28em',
           color: 'var(--text-primary)',
@@ -55,7 +55,7 @@ export default function Result({ word, lang, visible }) {
 
       {showTransition && (
         <div style={{
-          fontSize: '9px',
+          fontSize: '11px',
           color: 'var(--text-muted)',
           letterSpacing: '0.24em',
           marginTop: '5px',

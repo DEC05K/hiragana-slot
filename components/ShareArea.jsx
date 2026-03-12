@@ -89,9 +89,9 @@ export default function ShareArea({ word, lang, visible }) {
           setShowModal(true)
         }} style={{
           fontFamily: "'Noto Sans JP', sans-serif",
-          fontSize: '11px',
+          fontSize: '13px',
           letterSpacing: '0.06em',
-          padding: '9px 18px',
+          padding: '10px 20px',
           background: 'transparent',
           color: 'var(--text-secondary)',
           border: '1px solid var(--border)',
@@ -111,9 +111,9 @@ export default function ShareArea({ word, lang, visible }) {
         {/* コピーボタン */}
         <button onClick={handleCopy} style={{
           fontFamily: "'Noto Sans JP', sans-serif",
-          fontSize: '11px',
+          fontSize: '13px',
           letterSpacing: '0.06em',
-          padding: '9px 18px',
+          padding: '10px 20px',
           background: 'transparent',
           color: copied ? 'var(--text-muted)' : 'var(--text-secondary)',
           border: '1px solid var(--border)',

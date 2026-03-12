@@ -41,7 +41,7 @@ export default function SpeedSlider({ value, onChange, lang, disabled }) {
       {/* 遅ラベル */}
       <span style={{
         fontFamily: "'Noto Serif JP', serif",
-        fontSize: '10px',
+        fontSize: '11px',
         letterSpacing: '0.14em',
         color: 'var(--text-muted)',
         whiteSpace: 'nowrap',
@@ -81,7 +81,7 @@ export default function SpeedSlider({ value, onChange, lang, disabled }) {
       {/* 速ラベル */}
       <span style={{
         fontFamily: "'Noto Serif JP', serif",
-        fontSize: '10px',
+        fontSize: '11px',
         letterSpacing: '0.14em',
         color: 'var(--text-muted)',
         whiteSpace: 'nowrap',

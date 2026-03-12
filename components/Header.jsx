@@ -13,7 +13,7 @@ export default function Header({ lang, onLangToggle, title, tagline }) {
           top: '28px',
           right: '0',
           fontFamily: "'Noto Sans JP', sans-serif",
-          fontSize: '10px',
+          fontSize: '11px',
           letterSpacing: '0.08em',
           color: 'var(--text-muted)',
           background: 'none',
@@ -29,7 +29,7 @@ export default function Header({ lang, onLangToggle, title, tagline }) {
 
       <p style={{
         fontFamily: "'Noto Serif JP', serif",
-        fontSize: '9px',
+        fontSize: '10px',
         fontWeight: 300,
         letterSpacing: '0.38em',
         color: 'var(--text-muted)',
@@ -41,7 +41,7 @@ export default function Header({ lang, onLangToggle, title, tagline }) {
 
       <h1 style={{
         fontFamily: "'Noto Serif JP', serif",
-        fontSize: '22px',
+        fontSize: '25px',
         fontWeight: 300,
         letterSpacing: '0.16em',
         color: 'var(--text-primary)',
@@ -52,7 +52,7 @@ export default function Header({ lang, onLangToggle, title, tagline }) {
 
       <p style={{
         marginTop: '5px',
-        fontSize: '10px',
+        fontSize: '11px',
         color: 'var(--text-muted)',
         letterSpacing: '0.12em',
         fontFamily: "'Noto Sans JP', sans-serif",

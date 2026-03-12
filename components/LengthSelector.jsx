@@ -14,9 +14,9 @@ export default function LengthSelector({ reelCount, onChange, disabled, lang }) 
           disabled={disabled}
           style={{
             fontFamily: "'Noto Serif JP', serif",
-            fontSize: '12px',
-            width: '34px',
-            height: '34px',
+            fontSize: '14px',
+            width: '39px',
+            height: '39px',
             border: `1px solid ${reelCount === len ? 'var(--accent)' : 'var(--border)'}`,
             background: reelCount === len ? 'var(--accent)' : 'var(--surface)',
             color: reelCount === len ? '#fff' : 'var(--text-secondary)',

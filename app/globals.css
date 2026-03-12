@@ -18,18 +18,18 @@
   --stop-active:   #e6e2da;
   --shadow-sm:     0 1px 4px rgba(0,0,0,0.07);
 
-  --reel-w:    72px;
-  --char-h:    32px;
-  --reel-h:    96px;
-  --font-reel: 21px;
+  --reel-w:    82px;
+  --char-h:    37px;
+  --reel-h:    111px;
+  --font-reel: 24px;
 }
 
 @media (min-width: 768px) {
   :root {
-    --reel-w:    88px;
-    --char-h:    40px;
-    --reel-h:    120px;
-    --font-reel: 26px;
+    --reel-w:    101px;
+    --char-h:    46px;
+    --reel-h:    138px;
+    --font-reel: 30px;
   }
 }
 
@@ -103,14 +103,14 @@ body {
 
 .stop-btn {
   width: var(--reel-w);
-  height: 30px;
+  height: 34px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-top: none;
   border-radius: 0 0 5px 5px;
   cursor: pointer;
   font-family: 'Noto Sans JP', sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.06em;
   color: var(--text-secondary);
   transition: background 0.1s, color 0.1s;
@@ -123,9 +123,9 @@ body {
 
 .btn-spin {
   font-family: 'Noto Serif JP', serif;
-  font-size: 13px;
+  font-size: 15px;
   letter-spacing: 0.14em;
-  padding: 12px 44px;
+  padding: 14px 50px;
   background: var(--accent);
   color: #fff;
   border: 1px solid transparent;
@@ -133,7 +133,7 @@ body {
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.08s;
   box-shadow: var(--shadow-sm);
-  min-width: 160px;
+  min-width: 184px;
   max-width: 200px;
   width: auto;
   text-align: center;
@@ -154,7 +154,7 @@ body {
 .btn-sub {
   display: block;
   font-family: 'Noto Sans JP', sans-serif;
-  font-size: 8px;
+  font-size: 9px;
   letter-spacing: 0.18em;
   opacity: 0.55;
   margin-top: 2px;
@@ -163,7 +163,7 @@ body {
 
 .result-word {
   font-family: 'Noto Serif JP', serif;
-  font-size: 34px;
+  font-size: 39px;
   font-weight: 300;
   letter-spacing: 0.28em;
   color: var(--text-primary);
@@ -175,7 +175,7 @@ body {
 
 .result-romaji {
   font-family: 'Noto Sans JP', sans-serif;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 300;
   letter-spacing: 0.2em;
   color: var(--text-muted);
@@ -191,7 +191,7 @@ body {
   align-items: center;
 }
 .reel-badge {
-  font-size: 8px;
+  font-size: 9px;
   color: var(--text-muted);
   margin-bottom: 3px;
   height: 12px;
@@ -218,8 +218,8 @@ input[type='range'].speed-slider-thumb {
 input[type='range'].speed-slider-thumb::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 13px;
-  height: 13px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   background: #1a1917;
   cursor: pointer;
@@ -230,8 +230,8 @@ input[type='range'].speed-slider-thumb::-webkit-slider-thumb:hover {
   transform: scale(1.2);
 }
 input[type='range'].speed-slider-thumb::-moz-range-thumb {
-  width: 13px;
-  height: 13px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   background: #1a1917;
   border: none;
@@ -240,9 +240,9 @@ input[type='range'].speed-slider-thumb::-moz-range-thumb {
 }
 
 @media (min-width: 768px) {
-  .result-word { font-size: 48px; letter-spacing: 0.35em; }
-  .stop-btn { height: 36px; font-size: 11px; }
-  .btn-spin { font-size: 15px; padding: 14px 56px; min-width: 200px; }
+  .result-word { font-size: 55px; letter-spacing: 0.35em; }
+  .stop-btn { height: 42px; font-size: 12px; }
+  .btn-spin { font-size: 17px; padding: 16px 64px; min-width: 230px; }
   .footer-main {
     max-width: 900px;
     flex-direction: row;
